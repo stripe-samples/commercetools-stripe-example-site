@@ -1,28 +1,31 @@
 import express from 'express';
-const app = express();
-app.use(express.json());
-
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { dirname } from 'path';
+import cors from 'cors';
+import dotenv from 'dotenv'
+
+import commerceTools from './CommerceToolsHelper.js'
+import Stripe from 'stripe';
+
+const app = express();
+app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use('/confirm', express.static(path.join(__dirname, 'client/build')));
 
-import cors from 'cors';
+
 app.use(cors());
-import dotenv from 'dotenv'
 dotenv.config()
 
-import commerceTools from './CommerceToolsHelper.js'
 
 const STRIPE_KEY = process.env.REACT_APP_SK;
 const STRIPE_ADMIN = process.env.REACT_APP_ADMIN;
 const PORT = process.env.REACT_APP_PORT;
 const BASE_URL = process.env.REACT_APP_BASE_URL;
-import Stripe from 'stripe';
+
 const stripe = new Stripe(STRIPE_KEY);
 
 /* ------ SETUP WEBHOOK ON START------ */
