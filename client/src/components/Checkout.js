@@ -7,7 +7,7 @@ import Customer from './Customer';
 export default function Checkout(props) {
     // If you want to only show one way to checkout, turn one of the following 3 variable to default to true
     const [showHosted, setShowHosted] = useState(false);
-    const [showElements, setShowElements] = useState(false);
+    const [setShowElements] = useState(false);
     const [showUPE, setShowUPE] = useState(false);
     const [custId, setCustId] = useState('');
     const [custInfo, setCustInfo] = useState({ name: 'bob', city: 'chicago' });

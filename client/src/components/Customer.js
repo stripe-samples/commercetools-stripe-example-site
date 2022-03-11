@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { propTypes } from 'react-bootstrap/esm/Image';
 
 export default function Customer(props) {
     const [loading, setLoading] = useState(false);
