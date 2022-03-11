@@ -101,3 +101,31 @@ Click Add endpoint.
 # Sequence Diagram
 Below is a detailed sequence diagram of the calls used in this example:
 ![SequenceDiagram](docs/SequenceDiagram.png)
+
+# Commerce Tools
+When creating a new API client you will need to set the following Scopes:
+
+### Manage
+* Customers
+* Orders
+* Payments
+* Products
+
+### View
+* Categories
+* Customers
+* Orders
+* Payments
+* Products (all)
+* Products (published)
+
+### Manage My
+* Orders
+* Payments
+* Profile
+* Shopping Lists
+
+### Tokens
+* Create Anonymous Token
+
+![New Api Client](docs/ApiClient.png)

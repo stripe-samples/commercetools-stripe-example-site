@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CountryDropdown, CountryRegionData } from 'react-country-region-selector';
 
 export default function Customer(props) {
     const [loading, setLoading] = useState(false);
@@ -70,7 +71,6 @@ export default function Customer(props) {
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data);
             props.setCart(data);
         });
     }
@@ -148,7 +148,8 @@ export default function Customer(props) {
                     </div>
                     <div className="col">
                         <label htmlFor="country">country</label>
-                        <input type="text" className="form-control" id="country" onChange={e => setCountry(e.target.value)} value={country} />
+                        {/* <input type="text" className="form-control" id="country" onChange={e => setCountry(e.target.value)} value={country} /> */}
+                        <CountryDropdown  className="form-control" id="country" valueType="short" value={country} onChange={(val) => setCountry(val)} />
                     </div>
                 </div>
                 <div className="row mb-2">

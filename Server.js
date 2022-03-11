@@ -60,6 +60,7 @@ else{
     }
     catch(e){
         console.log('ERROR creating webhook: ' + e.message)
+        console.log('NOTE: If your REACT_APP_BASE_URL is a local address you may receive a "URL must be publicly accessible" error, this is expected. Please refer to the Testing Webhooks section in the README.md')
     }
 }
 
