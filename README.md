@@ -25,7 +25,7 @@ npm start
 ```
 
 ## Update .env with
-When running locally copy .env-sample to .env and update with your details
+When running locally copy `/.env-sample` to `/.env` **and** `/client/.env-sample` to `/client/.env` and update with your details
 
 ```bash
 cp .env-sample .env
