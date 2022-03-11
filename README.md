@@ -29,6 +29,7 @@ When running locally copy `/.env-sample` to `/.env` **and** `/client/.env-sample
 
 ```bash
 cp .env-sample .env
+cp client/.env-sample client/.env
 ```
 
 |Variable|Description|Example|
