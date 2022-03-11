@@ -33,7 +33,7 @@ export default function Cart(props) {
                 {props.cart.lineItems.map((item, key) => (
                     <div className="row" key={key} style={styles.item}>
                         <div className="col-4">
-                            <img style={styles.preview} src={item.variant.images[0].url} />
+                            <img alt="shopping cart item" style={styles.preview} src={item.variant.images[0].url} />
                         </div>
                         <div className="col-4">
                             {item.name['en-US']}

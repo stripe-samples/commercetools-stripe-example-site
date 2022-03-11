@@ -73,7 +73,7 @@ export default function ProductCard(props) {
         <>
             <div className="col">
                 <div style={styles.card} className="h-100" onClick={handleShow}>
-                    <img src={props.product.masterData.current.masterVariant.images[0]?.url} className="w-100" style={styles.img} />
+                    <img alt="product" src={props.product.masterData.current.masterVariant.images[0]?.url} className="w-100" style={styles.img} />
                     <div className="card-body" style={{paddingBottom:0}}>
                         <h5 style={styles.name}>
                             {props.product.masterData.current.name['en-US']}
