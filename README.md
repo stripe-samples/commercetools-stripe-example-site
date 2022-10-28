@@ -130,3 +130,5 @@ When creating a new API client you will need to set the following Scopes:
 * Create Anonymous Token
 
 ![New Api Client](docs/ApiClient.png)
+
+
