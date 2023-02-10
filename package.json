@@ -38,7 +38,8 @@
     "local": "react-scripts start",
     "build": "cd client;npm install;react-scripts build;cd ..",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "npx prettier --write ."
   },
   "eslintConfig": {
     "extends": [
@@ -63,5 +64,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8081"
+  "proxy": "http://localhost:8081",
+  "devDependencies": {
+    "prettier": "2.8.4"
+  }
 }
