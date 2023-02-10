@@ -39,7 +39,7 @@
     "build": "cd client;npm install;react-scripts build;cd ..",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "npx prettier --write ."
+    "format": "npx prettier --write ."
   },
   "eslintConfig": {
     "extends": [
