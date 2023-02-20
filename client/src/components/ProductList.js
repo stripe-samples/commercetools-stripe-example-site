@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import ProductCard from './ProductCard.js';
+import React, { useState, useEffect } from "react";
+import ProductCard from "./ProductCard.js";
 
 export default function ProductList(props) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -9,9 +9,9 @@ export default function ProductList(props) {
   useEffect(() => {
     setIsLoaded(false);
     setProducts([]);
-    fetch('/products/' + props.currency)
-      .then(res => res.json())
-      .then(obj => {
+    fetch("/products/" + props.currency)
+      .then((res) => res.json())
+      .then((obj) => {
         setProducts(obj);
         setIsLoaded(true);
       });
@@ -19,8 +19,7 @@ export default function ProductList(props) {
 
   if (!isLoaded) {
     return <div>Loading...</div>;
-  }
-  else {
+  } else {
     return (
       <>
         <div>
@@ -31,7 +30,8 @@ export default function ProductList(props) {
                 addToCart={props.addToCart}
                 key={key}
                 brandColor={props.brandColor}
-                currency={props.currency} />
+                currency={props.currency}
+              />
             ))}
           </div>
         </div>
@@ -39,5 +39,3 @@ export default function ProductList(props) {
     );
   }
 }
-
-
