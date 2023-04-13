@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 
 import commerceTools from "./CommerceToolsHelper.js";
 import Stripe from "stripe";
+import { version } from "os";
 
 const app = express();
 app.use(express.json());
@@ -140,6 +141,7 @@ app.post("/cart/customer", async (req, res) => {
 
 /* ------ CREATE CUSTOMER ------ */
 app.post("/customer", async (req, res) => {
+
   const payload = {
     email: req.body.email,
     name: req.body.name,
@@ -148,6 +150,14 @@ app.post("/customer", async (req, res) => {
       city: req.body.city,
       country: req.body.country,
     },
+    shipping: {
+      name: req.body.name,
+      address: {
+        line1: req.body.address,
+        city: req.body.city,
+        country: req.body.country,
+      },
+    }
   };
   let stripeCustomer = await stripe.customers.create(payload);
   payload.cartId = req.body.cartId;
@@ -156,6 +166,7 @@ app.post("/customer", async (req, res) => {
 
 /* ------ HOSTED CHECKOUT ------ */
 app.post("/create-checkout-session", async (req, res) => {
+
   const cart = req.body.cart;
   const ctCustomerId = req.body.customer;
   const ctCustomer = await commerceTools.getCustomer(ctCustomerId);
@@ -188,6 +199,13 @@ app.post("/create-checkout-session", async (req, res) => {
       success_url: BASE_URL + "/confirm?checkout_session={CHECKOUT_SESSION_ID}",
       cancel_url: BASE_URL,
       metadata: { summary: summary },
+      payment_intent_data:{
+        metadata:{
+          summary: summary,
+          commerceToolsCartId: cart.id,
+          commerceToolsOrderId: order.id,
+        }
+      },
       shipping_address_collection: {
         allowed_countries: [],
       },
@@ -210,28 +228,30 @@ app.post("/create-checkout-session", async (req, res) => {
     }
     if (currency === "gbp") {
       payload.payment_method_types = ["card", "bacs_debit"];
-      payload.payment_intent_data = {};
       payload.payment_intent_data.setup_future_usage = "off_session";
       payload.shipping_address_collection.allowed_countries = ["GB"];
     }
 
-    const session = await stripe.checkout.sessions.create(payload);
+    //need to use old api version as the new one doesn't create payment intent when creating checkout session.
+    //https://stripe.com/docs/upgrades#2022-08-01
+
+    const stripe2020 = new Stripe(STRIPE_KEY, {apiVersion: '2020-08-27'});
+
+    const session = await stripe2020.checkout.sessions.create(payload);
 
     // Copy metadata to PI
-    const pi = await stripe.paymentIntents.update(session.payment_intent, {
-      metadata: {
-        summary: summary,
-        commerceToolsCartId: cart.id,
-        commerceToolsOrderId: order.id,
-      },
-    });
+    const pi = await stripe.paymentIntents.retrieve(session.payment_intent)
+
     const payment = await commerceTools.createPayment(pi, currency, pi.amount);
     commerceTools.updatePaymentState("Authorization", pi);
     await commerceTools.addPaymentToOrder(order.id, payment);
 
+
     res.send({
       sessionId: session.id,
+      url: session.url
     });
+
   } catch (e) {
     res.status(400);
     return res.send({
@@ -244,14 +264,17 @@ app.post("/create-checkout-session", async (req, res) => {
 
 // Retrieving a session or a PI to display details on redirect from hosted checkout or from UPE
 app.get("/session/:id", async (req, res) => {
+
   const id = req.params.id;
   let pi;
+
   if (id.indexOf("cs_") > -1) {
     const session = await stripe.checkout.sessions.retrieve(id);
     pi = await stripe.paymentIntents.retrieve(session.payment_intent);
   } else {
     pi = await stripe.paymentIntents.retrieve(id);
   }
+
 
   res.send({
     receipt: pi.id,
@@ -314,17 +337,28 @@ app.post("/create-payment-intent", async (req, res) => {
 
 /* ------ WEBHOOK ENDPOINT ------ */
 app.post("/events", async (req, res) => {
+
+  // console.log('====================================');
+  // console.log('webhook event : ', req.body.type);
+  // console.log('====================================');
+
+
+
   if (req.body.type == "payment_intent.succeeded") {
+
     const paymentIntent = await stripe.paymentIntents.retrieve(
       req.body.data.object.id
     );
-    commerceTools.updateOrder(
+    const orderstatus = await commerceTools.updateOrder(
       paymentIntent.metadata.commerceToolsOrderId,
       "Paid",
       paymentIntent
     );
-    commerceTools.updatePaymentState("Charge", paymentIntent);
+    
+    const paymentstatus = await commerceTools.updatePaymentState("Charge", paymentIntent);
+
   }
+
   if (req.body.type == "payment_intent.payment_failed") {
     const paymentIntent = await stripe.paymentIntents.retrieve(
       req.body.data.object.id

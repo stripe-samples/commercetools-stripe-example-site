@@ -4,6 +4,7 @@ import getSymbolFromCurrency from "currency-symbol-map";
 export default function CheckoutUPE(props) {
   const [clientSecret, setClientSecret] = useState("");
   const [paymentElement, setPaymentElement] = useState();
+  const [elements, setElements] = useState();
   const [stripe, setStripe] = useState();
   const [error, setError] = useState("");
 
@@ -31,14 +32,11 @@ export default function CheckoutUPE(props) {
   )}`;
 
   const appearance = {
-    rowGap: "10px",
-    columnGap: "20px",
+    theme: 'stripe',
+    variables: {
+      fontFamily: "Roboto, sans-serif",
+    },
     rules: {
-      "*": {
-        fontFamily: "Roboto, sans-serif",
-        fontSize: "16px",
-        color: "#425466",
-      },
       ".Label": {
         fontWeight: "500",
       },
@@ -81,28 +79,29 @@ export default function CheckoutUPE(props) {
 
   useEffect(() => {
     if (clientSecret !== "") {
-      const stripe = window.Stripe(process.env.REACT_APP_PK, {
-        betas: ["payment_element_beta_1"],
-      });
+      const stripe = window.Stripe(process.env.REACT_APP_PK);
       const elements = stripe.elements({
+        clientSecret: clientSecret, 
+        appearance,
         fonts: [{ cssSrc: "https://fonts.googleapis.com/css?family=Roboto" }],
       });
-      const paymentElement = elements.create("payment", {
-        clientSecret,
-        appearance,
-      });
+  
+      const paymentElement = elements.create("payment");
       paymentElement.mount("#payment-element");
       setStripe(stripe);
       setPaymentElement(paymentElement);
+      setElements(elements);
     }
   }, [clientSecret]);
 
   const submitPayment = async (e) => {
     e.preventDefault();
 
+
+
     // Code below to add the billing and shipping address info is a temporary fix for an issue with Afterpay
     const { error } = await stripe.confirmPayment({
-      element: paymentElement,
+      elements,
       confirmParams: {
         return_url: process.env.REACT_APP_BASE_URL + "/confirm",
         payment_method_data: {
@@ -120,7 +119,7 @@ export default function CheckoutUPE(props) {
           },
         },
         shipping: {
-          name: props.custInfo.name,
+          name: "shipping name", //props.custInfo.name,
           address: {
             city: props.custInfo.city,
             country: "US",
