@@ -233,7 +233,7 @@ async function createPayment(paymentIntent, currency, centAmount) {
     key: paymentIntent.id,
     paymentMethodInfo: {
       paymentInterface: "Stripe",
-      method: paymentIntent.method,
+      method: paymentIntent.payment_method_types[0],
     },
     amountPlanned: {
       currencyCode: currency.toUpperCase(),
@@ -339,40 +339,55 @@ async function addPaymentToOrder(orderId, payment) {
 }
 
 async function updatePaymentState(paymentType, paymentIntent) {
+
   if (!client) {
     client = await createCtClient();
   }
   const payment = await getPayment(paymentIntent);
+
   let uri = requestBuilder.payments.byKey(paymentIntent.id).build();
+
   let paymentState = "Pending";
+  
   if (paymentType == "Charge" || paymentType == "Refund") {
     paymentState = "Success";
   }
-  const rsp = await client.execute({
-    uri: uri,
-    method: "POST",
-    body: {
-      version: payment.version,
-      actions: [
-        {
-          action: "addTransaction",
-          transaction: {
-            type: paymentType, //Authorization, CancelAuthorization, Charge, Refund, Chargeback
-            amount: {
-              currencyCode: paymentIntent.currency.toUpperCase(),
-              centAmount: paymentIntent.amount,
+
+  try {
+
+    const rsp = await client.execute({
+      uri: uri,
+      method: "POST",
+      body: {
+        version: payment.version,
+        actions: [
+          {
+            action: "addTransaction",
+            transaction: {
+              type: paymentType, //Authorization, CancelAuthorization, Charge, Refund, Chargeback
+              amount: {
+                currencyCode: paymentIntent.currency.toUpperCase(),
+                centAmount: paymentIntent.amount,
+              },
+              state: paymentState, //Initial, Pending, Success, Failure
             },
-            state: paymentState, //Initial, Pending, Success, Failure
           },
-        },
-      ],
-    },
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
-  return await rsp.body;
+        ],
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    return await rsp.body;
+
+  } catch(e) {
+    console.log('====================================');
+    console.log('commercetools error msg: ', e);
+    console.log('====================================');
+  }
+ 
 }
 
 async function updateOrder(orderId, paymentState) {

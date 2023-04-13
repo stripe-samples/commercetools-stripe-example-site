@@ -25,6 +25,8 @@ export default function CheckoutHosted(props) {
       }),
     });
     const session = await response.json();
+
+
     const result = await stripe.redirectToCheckout({
       sessionId: session.sessionId,
     });

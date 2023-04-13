@@ -17,10 +17,12 @@ export default function Confirmation(props) {
   };
 
   const query = new URLSearchParams(useLocation().search);
+ 
 
   useEffect(() => {
     setID(query.get("payment_intent") || query.get("checkout_session"));
   }, []);
+
 
   useEffect(() => {
     if (id) {
