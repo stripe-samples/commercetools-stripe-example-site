@@ -26,6 +26,11 @@ const STRIPE_ADMIN = process.env.REACT_APP_ADMIN;
 const PORT = process.env.REACT_APP_PORT;
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
+// Don't put any keys in code. Use an environment variable (as shown
+// here) or secrets vault to supply keys to your integration.
+//
+// See https://docs.stripe.com/keys-best-practices and find your
+// keys at https://dashboard.stripe.com/apikeys.
 const stripe = new Stripe(STRIPE_KEY);
 
 /* ------ SETUP WEBHOOK ON START------ */
