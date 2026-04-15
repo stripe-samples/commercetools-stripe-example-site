@@ -21,6 +21,11 @@ app.use(cors());
 
 dotenv.config();
 
+// Don't put any keys in code. Use an environment variable (as shown
+// here) or secrets vault to supply keys to your integration.
+//
+// See https://docs.stripe.com/keys-best-practices and find your
+// keys at https://dashboard.stripe.com/apikeys.
 const STRIPE_KEY = process.env.REACT_APP_SK;
 const STRIPE_ADMIN = process.env.REACT_APP_ADMIN;
 const PORT = process.env.REACT_APP_PORT;
